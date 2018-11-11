@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+<form action="" >
+  <h2>Basic Table</h2>
+  <div class="input-group date" data-provide="datepicker">
+    <input type="date" name= "date" class="form-control">
+  </div>           
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Attendance</th>
+        <th>Roll Number</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach($result as $row){?>
+      <tr>
+      <td><input type="checkbox" name="atten" id="atten" /></td>
+      <input type="hidden" name="<?php echo $this->security->get_csrf_token_name();?>" value="<?php echo $this->security->get_csrf_hash()?>"/>
+      <td style="display: none"><input type="text" name="attendance[]" id="attendance" value="0"/></td>
+      <td><input type="text" name="roll_no[]" value="<?php echo $row->roll_no;?>"/></td>
+      <td><input type="text" name="name[]" value="<?php echo $row->name;?>"/></td>
+      <td></td>
+      </tr>
+    <?php } ?>
+      
+    </tbody>
+  </table>
+  <div class="input-group date" data-provide="datepicker">
+    <button type="button">Submit</button> 
+  </div>
+</div>
+</form>
+
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$('.table').on('change', '#atten', function() {
+  val =$(this).closest("tr").find("#attendance").val();
+  if(val=='0'){
+    $(this).closest("tr").find("#attendance").val('1');
+  }else{
+    $(this).closest("tr").find("#attendance").val('0');
+  }
+});
+$('button').click(function(){
+  data = $('form').serialize();
+  $.ajax({
+    type : 'POST',
+    url : "<?php echo base_url('index.php/Datatable/add_data')?>",
+    data : data
+});
+});
+</script>
