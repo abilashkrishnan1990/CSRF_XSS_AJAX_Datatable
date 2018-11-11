@@ -1,0 +1,86 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Datatable extends CI_Controller {
+	public function  __construct(){
+		parent::__construct();
+		$this->load->database();
+		$this->load->helper(array('form','url','file'));
+	}
+	public function index()
+	{
+		$sql = "select * from tbl_student";
+		$query = $this->db->query($sql);
+		$result = $query->result();
+		$rows = $query->num_rows();
+		$data['result']=$result;
+		$this->load->view('datatable_view',$data);
+	}
+	public function data(){
+
+		$draw = intval($this->input->get("draw"));
+        $start = intval($this->input->get("start"));
+        $length = intval($this->input->get("length"));
+		$data = array();
+		$sql = "select * from tbl_student";
+		$query = $this->db->query($sql);
+		$rows = $query->num_rows();
+			foreach ($query->result() as  $row) {
+				$data[] = array(
+					$row->id,
+				    $row->name,
+					$row->date,
+					$row->attendance
+				);
+			}
+		$output = array(
+               "draw" => $draw,
+                 "recordsTotal" => $query->num_rows(),
+                 "recordsFiltered" => $query->num_rows(),
+                 "data" => $data
+            );
+          echo json_encode($output);
+          
+	}
+	public function ajax(){
+		$sql = "select * from tbl_student";
+		$query = $this->db->query($sql);
+		$result = $query->result();
+		$rows = $query->num_rows();
+		$data['result']=$result;
+		$this->load->view('add_multi_row',$data);
+
+	}
+	public function add_data(){
+		$cnt = count($_POST['name']);
+		$date = $this->input->post('date');
+		for($i=0;$i<$cnt;$i++){
+			$roll_no = $this->input->post('roll_no')[$i];
+			$name = $this->input->post('name')[$i];
+			$attendance = $this->input->post('attendance')[$i];
+			$sql = "insert into tbl_attendance(roll_no,attendance,date)values('$roll_no','$attendance','$date')";
+			$query =$this->db->query($sql);
+		}
+		echo $rows = $this->db->affected_rows();
+		
+	}
+	public function csrf(){
+		$this->load->view('csrf');
+	}
+	public function csrf_add(){
+			echo $this->input->post('input');
+	}
+	public function xss_clean(){
+			$this->load->view('csrf');
+	}
+	public function xss_clean_add(){
+		$data['nonxssData']= array(
+      'first_name' => $this->input->post('input')
+    );
+    // Apply Cross Site Scripting of "security" library, which filtered data from passing through <script> tag.
+    $data['xssData'] = $this->security->xss_clean($data['nonxssData']);
+    print_r($data['xssData']);
+ 
+	}
+}
+//https://code-boxx.com/simple-csrf-token-php/
