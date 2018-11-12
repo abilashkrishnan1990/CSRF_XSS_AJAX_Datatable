@@ -1,0 +1,251 @@
+<?php
+
+if($action!='edit'){
+	$item_name='';$price='';$quantity='';$status='';$sku="";$product_id='';
+	$button_value='Add';
+}
+else if($action=='edit'){
+	
+	foreach($result as $row){
+		$item_name=$row->item_name;
+		$price=$row->price;
+		$quantity=$row->quantity;
+		$status=$row->status;
+		$product_id=$row->product_id;
+		$sku=$row->sku;
+	}
+	$button_value='Edit';
+}else{
+
+	$button_value='Add';
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Products | Terrific Minds</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  
+  <?php $this->load->view('style.php');?>
+  		<link href="<?php echo base_url('assets/plugins/dropzone/css/style.css');?>" rel="stylesheet">
+        <link href="<?php echo base_url('assets/plugins/dropzone/css/dropzone.css');?>" rel="stylesheet">
+        <script src="<?php echo base_url('assets/plugins/dropzone/js/jquery-3.2.1.min.js');?>" ></script>
+        <script src="<?php echo base_url('assets/plugins/dropzone/js/dropzone.js');?>"></script>
+        
+
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  <!-- Navbar -->
+  <?php $this->load->view('nav_bar');?>
+  <!-- navbar -->
+
+  <!-- Main Sidebar Container -->
+  <?php $this->load->view('side_bar');?>
+  <!-- Main Sidebar Container -->
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Products</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Products</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<!-- left column -->
+				<div class="col-md-12">
+					<!-- general form elements -->
+					<div class="card card-primary">
+						<div class="card-header">
+							<h3 class="card-title">Quick Add</h3>
+						</div>
+						<form role="form" class="form">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-6">
+										<div class="form-group">
+										<label for="exampleInputEmail1">Product Sku </label>
+										<input type="text" class="form-control" id="exampleInputEmail1" name="sku" placeholder="SkU" value="<?php echo $sku;?>" data-validation="length alphanumeric" data-validation-length="min4" required>
+										<input type="hidden" class="form-control" id="exampleInputEmail1" name="product_id" placeholder="SkU" value="<?php echo $product_id;?>">
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="form-group">
+										<label for="exampleInputPassword1">Product Name</label>
+										<input type="text" class="form-control" id="exampleInputPassword1" name="item_name" placeholder="Name" value="<?php echo $item_name;?>" data-validation="length alphanumeric" data-validation-length="min4" required>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-4">
+										<div class="form-group">
+										<label for="exampleInputEmail1">Price </label>
+										<input type="number" class="form-control" id="exampleInputEmail1" name="price" placeholder="Price" value="<?php echo $price;?>" required>
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="form-group">
+										<label for="exampleInputPassword1">Quantity</label>
+										<input type="number" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="<?php echo $quantity;?>" required>
+										<span id="errmsg"></span>
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="form-group">
+										<label>Status</label>
+										<select class="form-control" name="status">
+										<option value="1" <?php if($status=='1') {echo 'selected';}?>>Active</option>
+										<option value="0" <?php if($status=='0') {echo 'selected';}?>>Inactive</option>
+										</select>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-4">
+										<div class="form-group">
+										<label for="exampleInputPassword1">Brand</label>
+										<input type="text" class="form-control" id="Brand" name="brand" placeholder="Brand" value="<?php echo $quantity;?>" required>
+										<span id="errmsg"></span>
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="form-group">
+										<label for="exampleInputPassword1">Model</label>
+										<input type="text" class="form-control" id="Brand" name="model" placeholder="model" value="<?php echo $quantity;?>" required>
+										<span id="errmsg"></span>
+										</div>
+									</div>
+									<div class="col-4">
+										<div class="form-group">
+										<label for="exampleInputPassword1">Dimentions</label>
+										<input type="text" class="form-control" id="dimentions" name="dimentions" placeholder="dimentions" value="<?php echo $quantity;?>" required>
+										<span id="errmsg"></span>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-12 ">
+									<div class='content'>
+							            <!--<form action="Welcome/Upload" class="dropzone" id="myAwesomeDropzone"> 
+							            </form>-->
+							            <div class="dropzone" id="myAwesomeDropzone"></div>
+							        </div> 
+								</div>
+								<div class="col-md-12 ">
+								<div class="offset-md-4" >
+								  <button type="submit" class="btn btn-primary" id="submit-data" name="action" value="<?php echo $button_value;?>"><?php echo $button_value;?></button>
+								</div>
+								</div>
+							</div>
+						</form>
+
+					</div>
+				</div><!--left column -->
+			</div><!--row -->
+		</div><!--container-fluid -->
+		
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <?php $this->load->view('footer');?>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+
+<?php $this->load->view('script');?>
+<script>
+var image_name=[];
+$('.form').submit(function (e) {
+            e.preventDefault();
+            var data = $('.form').serialize();
+            <?php if($action == 'add') { ?>
+            data += '&add=';
+            <?php } else { ?>
+            data += '&edit=';
+            <?php } ?>
+            data +='&image_name='+image_name.toString();
+            $.post('<?php echo base_url('product/submit_data');?>', data, function (data) {
+                var data_arr = $.parseJSON(data);
+                if (data_arr['err'] === 1) {
+                	alert(data_arr['txt']);
+                    return false;
+                }
+                else {
+                	alert(data_arr['txt']);
+                    window.location.href = "<?php echo base_url('product/item_list');?>";
+                }
+            })
+        });
+
+
+Dropzone.autoDiscover=false;
+var myDropzone=new Dropzone("#myAwesomeDropzone",{
+	url:"<?php echo base_url('product/upload');?>",
+	acceptedFiles: "image/*",
+	addRemoveLinks: true,
+	init: function() {
+    	var me=this;
+    	<?php if($action=='edit') {?>
+    	$.get('<?php echo base_url('functions/list_files');?>',{action: 'delete_file', id:<?php echo $product_id;?>},function(data){
+	    	if(data.length !=''){
+          console.log(data);
+	    		$.each(data, function(key,value){
+	            var mockFile = value;
+	            me.emit("addedfile", mockFile);
+	            me.emit("thumbnail", mockFile, "<?php echo base_url();?>product_images/"+value.name);
+	            me.emit("complete", mockFile);
+	        	});
+	    	}
+    	});
+    	<?php } ?>
+	},
+	removedfile: function(file) {
+                var name=file.name;
+                $.ajax({
+                	type:'post',
+                	url:"<?php echo base_url('functions/remove');?>",
+                	data:{ file: name },
+                	dataType:'html'
+                });
+                var previewElement;
+                return (previewElement =file.
+                	previewElement) != null ? (
+                	previewElement.parentNode.removeChild(
+                		file.previewElement)) : (void 0);
+                },
+    success: function(file, response) {
+              image_name.push(file.name);
+            }
+
+});
+
+</script>
+</body>
+</html>
