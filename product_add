@@ -1,0 +1,128 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Product extends CI_Controller {
+	private $upload_path='./product_images/';
+	public function __construct() {
+		parent::__construct();
+		$this->load->library('session');
+		$this->load->helper('url');
+		$this->load->model('item_model');
+		}
+	public function index()
+	{
+		$data['action']='add';
+		$this->load->view('products',$data);
+		//$this->load->view('new1',$data);
+	}
+	public function action($action=null,$id=null)
+	{
+
+		$GLOBALS;
+		switch($action){
+			case 'add':
+				$data['action'] = 'add';
+				$this->load->view('products',$data);
+				break;
+			case 'edit':
+				if(!empty($id)){
+					$data['action'] = 'edit';
+					$data['result'] = $this->item_model->items_details($id);
+					$data['product_information'] = json_decode($data['result'][0]->product_information);
+					$this->load->view('products',$data);
+				}else{
+					$data['action'] = 'add';
+					$this->load->view('products',$data);
+				}
+				break;
+			case 'delete':
+				$data['action'] = 'delete';
+				$data['id']  = $id;
+				$result  =$this->item_model->item_action($data);
+				if($result>0){
+					$this->item_list();
+				}else{
+					$this->item_list();
+				}
+
+				break;
+			default:
+				$data['action'] = 'add';
+				$this->load->view('products',$data);
+				break;
+		}
+	}
+	public function item_list()
+	{
+		$data['result']  = $this->item_model->items_details();
+		$this->load->view('item_list',$data);
+	}
+
+	public function submit_data()
+	{
+
+		if(isset($_POST['add'])|| isset($_POST['edit'])){
+
+			if(isset($_POST['edit'])){
+				$data['action']  = 'edit';
+				$data['id']  = $this->input->post('product_id');
+			}
+			if(isset($_POST['add'])){
+				$data['action'] = 'add';
+			}
+			$product_information = json_encode(array('barnd' => $this->input->post('brand'),
+				'model'=>$this->input->post('model'),
+				'dimentions'=>$this->input->post('dimentions')
+			 ));
+
+			$data['values'] = array(
+				'item_name' => $this->input->post('item_name'),
+				'sku' => $this->input->post('sku'),
+				'price' => $this->input->post('price'),
+				'quantity' => $this->input->post('quantity'),
+				'status' => $this->input->post('status'),
+				'product_information' => $product_information
+			);
+			
+
+			$data['image_name'] = explode(",",$this->input->post('image_name'));
+		}
+		
+		$result=$this->item_model->item_action($data);
+		if($result > 0){
+			//$this->item_list();
+			echo $this->jsonEcho(0, 'Item Added Successfully!..', 4, 'test', 'product/item_list');
+        	exit();
+		}else{
+			echo $this->jsonEcho(0, 'something went wrong try again !..', 4, 'test', 'product/item_list');
+		}
+	}
+
+	
+        public function upload()
+
+        {
+                $config['upload_path']          = $this->upload_path;
+                $config['allowed_types']        = 'gif|jpg|png';
+                $config['max_size']             = 5120; // 5 Mb
+                $this->load->library('upload', $config);
+
+                if ( ! $this->upload->do_upload('file'))
+                {
+                        $error = array('error' => $this->upload->display_errors());
+                }
+                else
+                {
+                        $data = array('upload_data' => $this->upload->data());
+                }
+        }
+        public function remove(){
+        	$file =$this->input->post('file');
+        	if($file && file_exists($this->upload_path."/".$file)){
+        		unlink($this->upload_path."/".$file);
+        	}
+        }
+        public function jsonEcho($err, $txt, $id = '', $value = '', $redirect = '') {
+    		return json_encode(['err' => $err, 'txt' => $txt, 'redirect' => $redirect, 'id' => $id, 'value' => $value]);
+		}
+}
